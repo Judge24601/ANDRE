@@ -13,10 +13,13 @@ int frontSensorPin = 0;
 int leftSensorPin = 1;
 int rightSensorPin = 2;
 
+#Set servo pin
+int servoPin = 3;
+pinMode(servoPin, OUTPUT);
+
 #Set main motor to high
 int driveTrainPin = 0;
 pinMode(driveTrainPin, OUTPUT);
-
 
 #start running superloop
 while(1) {
@@ -31,15 +34,15 @@ while(1) {
 
 void avoid() {
     #Turn front wheels right
-    GPIO.output(0, rightV)
+    analogWrite(servoPin, rightV);
     
     """Perform 90deg turn"""
     
     #Turn front wheels to straight
-    GPIO.output(0, straightV)
+    analogWrite(servoPin, straightV);
     
     #Keep straight while side sensor reads high voltage
-    while(GPIO.input(2) > clearDistance):
+    while(analogRead(leftSensorPin) > clearDistance):
     #Keep going forwards
         
         """After side is clear"""
