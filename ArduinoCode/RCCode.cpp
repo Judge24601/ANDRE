@@ -1,6 +1,6 @@
 """ RC car code"""
 
-objectAvoidanceDistance = 3;
+objectAvoidanceDistance = 100;
 
 rightV = 0;
 leftV = 255;
@@ -27,7 +27,7 @@ while(1) {
     #Read front IR sensor
     dist = analogRead(frontSensorPin);
 
-    if(dist > objectAvoidanceDistance) {
+    if(dist > objectAvoidanceDistance && dist != -1) {
         avoid();
     }
 }
