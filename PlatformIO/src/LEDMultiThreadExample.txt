@@ -1,0 +1,107 @@
+/*
+Arduino Protothreading Example v1.1
+by Drew Alden (@ReanimationXP) 1/12/2016
+
+- Update: v1.1 - 8/18/17
+  Arduino 1.6.6+ prototyping changed, small fixes.
+  (create functions ahead of use, removed foreach and related library).
+  
+  Note that TimedAction is now out of date. Be sure to read notes about
+  TimedAction and WProgram.h / Arduino.h errors.
+*/
+
+//COMPONENTS
+
+/*
+This code was made using the Sunfounder Arduino starter kit's blue LCD.
+It can be found at Amazon.com in a variety of kits.
+*/
+
+//THIRD-PARTY LIBRARIES
+//these must be manually added to your Arduino IDE installation
+
+//TimedAction
+//allows us to set actions to perform on separate timed intervals
+//http://playground.arduino.cc/Code/TimedAction
+//http://wiring.uniandes.edu.co/source/trunk/wiring/firmware/libraries/TimedAction
+
+#include <TimedAction.h>
+//NOTE: This library has an issue on newer versions of Arduino. After
+//      downloading the library you MUST go into the library directory and
+//      edit TimedAction.h. Within, overwrite WProgram.h with Arduino.h
+
+
+
+int green = 3;
+int red = 9;
+int white = 10;
+
+
+void blinkWhite() {
+  digitalWrite(white, HIGH);
+  delay(100);
+  digitalWrite(white, LOW);
+}
+
+void blinkRed() {
+  digitalWrite(red, HIGH);
+  delay(100);
+  digitalWrite(red, LOW);
+}
+
+TimedAction whiteThread = TimedAction(1000,blinkWhite);
+TimedAction redThread = TimedAction(3000,blinkRed);
+//TimedAction whiteThread = TimedAction(10,incrementNumber);
+
+// where's our third task? well, it's the main loop itself. the task
+// which repeats most often should be used as the loop. other
+// tasks are able to "interrupt" the fastest repeating task.
+
+
+void setup() {
+}
+
+
+void loop() {
+  
+  //check on our threads. based on how long the system has been
+  //running, do they need to fire and do work? if so, do it!
+  redThread.check();
+  whiteThread.check();
+  
+  //third task, fade in backlight from min to max brightness
+  //in increments of 5 points:
+  digitalWrite(13, HIGH);
+  for (int fadeValue = 0 ; fadeValue <= 255; fadeValue += 10) {
+    
+    //wait a second, why am i checking on the threads here? because
+    //this is a for loop. you must check on your threads during ANY
+    //loops that occur, including the main one!
+    whiteThread.check();
+    redThread.check();
+    
+    //sets the value (range from 0 to 255):
+    analogWrite(green, fadeValue);
+    
+    // wait for 20 milliseconds to see the dimming effect
+    // keep delays on the main loop SHORT. these WILL prevent
+    // other threads from firing on time.
+    delay(20);
+  }
+
+  //fade out from max to min in increments of 5 points:
+  digitalWrite(13, LOW);
+  for (int fadeValue = 255 ; fadeValue >= 0; fadeValue -= 10) {
+    
+    //check on our threads again
+    whiteThread.check();
+    redThread.check();
+    
+    //sets the value (range from 0 to 255):
+    analogWrite(green, fadeValue);
+    
+    //wait for 20 milliseconds to see the dimming effect
+    delay(20);
+  }
+  
+}
