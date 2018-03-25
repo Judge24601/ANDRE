@@ -9,17 +9,17 @@
 bool turned = false;
 
 // Define pins numbers
-const int motorPin = 7;
-const int trigPin = 9;
-const int echoPin = 10;
+const int motorPin = 3;
+const int trigPin = 13;
+const int echoPin = 12;
 const int servoPin = 2;
 const int IRPinLeft = 5;
 const int IRPinRight = 6;
 
 // Other constants
-const int defaultServoAngle = 65; // Reference angle in which the wheels are aligned straight
+const int defaultServoAngle = 85; // Reference angle in which the wheels are aligned straight
 const int bitToMotorRPM = 0; // Conversion factor from an 8-bit number (0 to 255) to some speed of the motor
-const int maxServoAngle = 0; // Maximum angle from straight in which the servo can comfortably rotate.
+const int maxServoAngle = 15; // Maximum angle from straight in which the servo can comfortably rotate.
 
 // Global variables to store data
 int maximumRange = 30; // Maximum range threshold for sonar
@@ -33,7 +33,7 @@ int servoAngle = 0; // servo position in degrees
 // Function prototypes
 void turnAbs(int angle);
 void turnRef(int angle);
-void turnStraignt();
+void turnStraight();
 void getSonarData();
 void changeMotorSpeed(int RPM);
 
@@ -59,17 +59,18 @@ void loop() {
   if (distance < maximumRange) {
     if (!turned) {
       // We've encountered an object. Turn right and slow down.
-      turnRef(12);
+      turnRef(maxServoAngle);
       changeMotorSpeed(100);
       delay(100); // Delay a certain period of time for the car to complete a 90-degree turn.
 
       // We've completed an turn. Drive straight and keep straight until the left IR pin no longer detects the object.
       turnStraight();
-      while(digitalRead(IRPinLeft) == HIGH) delay(10);
+      // while(digitalRead(IRPinLeft) == HIGH) delay(10);
+      delay(2000);
 
       // We've avoided the object. Return to default state.
-      turnRef(-12);
-      changeMotorSpeed(400);
+      turnRef(-maxServoAngle);
+      // changeMotorSpeed(200);
     }
   } else {
     turnStraight();
@@ -104,7 +105,8 @@ void turnStraight() {
  * Changes the motor speed from an input RPM.
  */ 
 void changeMotorSpeed(int rpm){
-  int speed8bit = rpm / bitToMotorRPM;
+  // int speed8bit = rpm / bitToMotorRPM;
+  int speed8bit = rpm;
   // Cannot have values greater than 255 or less than 0.
   if (speed8bit > 255) speed8bit = 255;
   if (speed8bit < 0) speed8bit = 0;
