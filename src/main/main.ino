@@ -1,4 +1,4 @@
-#include <hcsr04.h>
+// #include <hcsr04.h>
 
 // Libraries
 #include <Arduino.h>
@@ -16,10 +16,10 @@ const int rightIRPin = 8;
 const int motorPin = 11;
 
 // Constants
-const int straightAngle = 35;
+const int straightAngle = 98;
 const int turnAngle = 30;
 const int leftTurn = straightAngle - turnAngle;
-const int rightTurn = straightAngle + turnAngle;
+const int rightTurn = straightAngle + turnAngle + 5;
 int maxDistance = 70;
 int minDistance = 2;
 const int turnTime = 250;
@@ -81,7 +81,7 @@ void loop() {
         }
         break;
       case 2:
-        if(turnComplete(lastTurnDuration)) {
+        if(turnComplete(lastTurnDuration + 50)) {
           turnStraight();
           avoidStage = 3;
         }
@@ -93,7 +93,7 @@ void loop() {
         }
         break;
       case 4:
-        if(turnComplete(turnTime)) {
+        if(turnComplete(turnTime + 50)) {
           turnStraight();
           avoidStage = 5;
         }
@@ -113,7 +113,6 @@ void loop() {
         break;
     }
   }
-  delay(5);
 }
 
 bool checkDistance () {
