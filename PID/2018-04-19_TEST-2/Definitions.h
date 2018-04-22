@@ -10,7 +10,6 @@
 #define rxPin 2
 #define txPin 3
 
-#define gryoPin 
-#define xAccelPin
-#define yAccelPin
-#define zAccelPin
+#define Kp 0
+#define Ki 0
+#define Kd 0
